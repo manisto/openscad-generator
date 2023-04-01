@@ -9,6 +9,8 @@ export function generate(settings, onDone) {
     process.on("close", (exitCode) => {
         onDone(file);
     });
+
+    process.stderr.on('data', (err) => console.error(err.toString('utf8')));
 }
 
 process.stderr.on('data', (data) => {

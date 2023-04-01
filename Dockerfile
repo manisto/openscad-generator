@@ -4,6 +4,7 @@ RUN echo https://dl-cdn.alpinelinux.org/alpine/edge/testing >> /etc/apk/reposito
 RUN apk update
 RUN apk add nodejs npm openscad
 
+WORKDIR /app/out
 WORKDIR /app
 
 COPY package-lock.json .
