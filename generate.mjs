@@ -1,4 +1,5 @@
 import { spawn } from "node:child_process";
+import path from "node:path";
 
 export function generate(settings, onDone) {
     const file = fname(settings);
@@ -27,7 +28,7 @@ function tick(val) {
 }
 
 function fname(params) {
-    return `${dash(params.material)}_${dash(params.brand)}_${dash(params.name)}.stl`;
+    return path.join("out", `${dash(params.material)}_${dash(params.brand)}_${dash(params.name)}.stl`);
 }
 
 function dash(name) {
