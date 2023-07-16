@@ -1,32 +1,37 @@
-import { spawn } from "node:child_process";
+import { promisify } from "node:util";
+import { exec } from "node:child_process";
 import path from "node:path";
 
-export function generate(settings, onDone) {
-    const file = fname(settings);
+export function generate(values) {
+    const inFile = path.join("data", "model.scad");
+    const outFile = fname(values);
+    const command = ["openscad", "-o", `"${outFile}"`, ...params(values), `"${inFile}"`];
 
-    var process = spawn("openscad", ["-o", file, ...params(settings), "swatch.scad"]);
-
-    process.on("close", (exitCode) => {
-        onDone(file);
+    return new Promise((resolve, reject) => {
+        exec(command.join(" "), (error, stdout, stderr) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(outFile);
+            }
+        });
     });
-
-    process.stderr.on('data', (err) => console.error(err.toString('utf8')));
 }
-
-process.stderr.on('data', (data) => {
-    console.error(`stderr: ${data}`);
-  });
-
-process.on("close", (exitCode) => {
-    console.log(exitCode);
-});
 
 function params(params) {
-    return Object.keys(params).flatMap(key => ["-D", `${key}=${tick(params[key])}`]);
+    return Object.keys(params).flatMap(key => ["-D", `"${key}=${tick(params[key])}"`]);
 }
 
-function tick(val) {
-    return (isNaN(val)) ? `"${val}"` : `${val}`;
+function tick(value) {
+    switch (typeof value) {
+        case "number":
+        case "boolean":
+            return `${value}`;
+        case "string":
+            return `\\"${value}\\"`;
+        default:
+            throw new Error("Unsupported type: " + typeof value);
+    }
 }
 
 function fname(params) {

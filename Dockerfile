@@ -14,7 +14,10 @@ RUN npm install
 COPY index.html .
 COPY server.mjs .
 COPY generate.mjs .
-COPY swatch.scad .
+
+WORKDIR /app/data
+COPY ./data/model.scad .
+COPY ./data/settings.mjs .
 
 EXPOSE 3000
 CMD node server.mjs
