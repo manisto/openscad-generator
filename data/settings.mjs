@@ -1,5 +1,5 @@
 export const settings = {
-    "filename": "",
+    "filenameTemplate": "",
     "parameters": [
         {
             "type": "string",

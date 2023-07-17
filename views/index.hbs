@@ -11,7 +11,16 @@
                     {{#if type.number}}
                         <div class="mb-3">
                             <label for="{{name}}" class="form-label">{{label}}</label>
-                            <input class="form-control" id="{{name}}" type="text" name="{{name}}" placeholder="{{placeholder}}" value="{{defaultValue}}" />
+                            {{#if possibleValues}}
+                                <select class="form-select" id="{{name}}" name="{{name}}">
+                                    {{#each possibleValues}}
+                                        <option>{{.}}</option>
+                                    {{/each}}
+                                </select>
+                            {{/if}}
+                            {{#unless possibleValues}}
+                                <input class="form-control" id="{{name}}" type="text" name="{{name}}" placeholder="{{placeholder}}" value="{{defaultValue}}" />
+                            {{/unless}}
                         </div>
                     {{/if}}
                     {{#if type.string}}
