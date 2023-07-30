@@ -14,9 +14,8 @@ RUN npm install
 COPY server.mjs .
 COPY generate.mjs .
 
-WORKDIR /app/data
-COPY ./data/model.scad .
-COPY ./data/settings.mjs .
+COPY data/ data/
+COPY views/ views/
 
 EXPOSE 3000
 CMD node server.mjs
