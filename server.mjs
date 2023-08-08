@@ -1,7 +1,13 @@
+import hbs from "hbs";
+import url from "node:url";
+import path from "node:path";
 import express from "express";
 import bodyParser from "body-parser";
 import { generate } from "./generate.mjs";
 import { settings } from "./data/settings.mjs";
+
+const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
+hbs.registerPartials(path.join(__dirname, "views", "partials"));
 
 const app = express();
 const port = 3000;
@@ -9,13 +15,8 @@ const port = 3000;
 const validTypes = ["boolean", "number", "string"];
 
 const viewModel = {
-    parameters: settings.parameters.map(parameter => ({
-        ...parameter, 
-        type: {
-            [validTypes.includes(parameter.type) ? parameter.type : "other"]: true,
-            _specified: parameter.type
-        },
-    })),
+    groups: mapGroupsToView(settings.groups),
+    parameters: mapParametersToView(settings.parameters),
 };
 
 app.set('view engine', 'hbs');
@@ -66,4 +67,29 @@ function parseBody(body) {
     });
 
     return parsedParameters;
+}
+
+function mapGroupsToView(groups) {
+    if (!groups) {
+        return null;
+    }
+
+    return groups.map(group => ({
+        ...group,
+        parameters: mapParametersToView(group.parameters),
+    }));
+}
+
+function mapParametersToView(parameters) {
+    if (!parameters) {
+        return null;
+    }
+    
+    return parameters.map(parameter => ({
+        ...parameter, 
+        type: {
+            [validTypes.includes(parameter.type) ? parameter.type : "other"]: true,
+            _specified: parameter.type
+        },
+    }));
 }

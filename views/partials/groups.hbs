@@ -1,0 +1,20 @@
+{{#if groups}}
+    <div class="accordion" id="groups">
+        {{#each groups}}
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button
+                        class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#group-{{@index}}"
+                        aria-expanded="false" aria-controls="group-{{@index}}">
+                        {{label}}
+                    </button>
+                </h2>
+                <div id="group-{{@index}}" class="accordion-collapse collapse" data-bs-parent="#groups">
+                    <div class="accordion-body">
+                        {{> parameterList }}
+                    </div>
+                </div>
+            </div>
+        {{/each}}
+    </div>
+{{/if}}

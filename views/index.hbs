@@ -3,43 +3,19 @@
     <head>
         <meta charset="utf-8" />
         <link rel="stylesheet" type="text/css" href="node_modules/bootstrap/dist/css/bootstrap.min.css" />
+        <style>
+            .accordion, .card, .parameters > div + div, .submit {
+                margin-top: 1rem;
+            }
+        </style>
+        <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
     </head>
     <body>
         <div class="container">
-            <form  method="post" class="mt-3">
-                {{#each parameters}}
-                    {{#if type.number}}
-                        <div class="mb-3">
-                            <label for="{{name}}" class="form-label">{{label}}</label>
-                            {{#if possibleValues}}
-                                <select class="form-select" id="{{name}}" name="{{name}}">
-                                    {{#each possibleValues}}
-                                        <option>{{.}}</option>
-                                    {{/each}}
-                                </select>
-                            {{/if}}
-                            {{#unless possibleValues}}
-                                <input class="form-control" id="{{name}}" type="text" name="{{name}}" placeholder="{{placeholder}}" value="{{defaultValue}}" />
-                            {{/unless}}
-                        </div>
-                    {{/if}}
-                    {{#if type.string}}
-                        <div class="mb-3">
-                            <label for="{{name}}" class="form-label">{{label}}</label>
-                            <input class="form-control" id="{{name}}" type="text" name="{{name}}" placeholder="{{placeholder}}" value="{{defaultValue}}" />
-                        </div>
-                    {{/if}}
-                    {{#if type.boolean}}
-                        <div class="mb-3 form-check">
-                            <input type="checkbox" class="form-check-input" id="{{name}}" name="{{name}}" value="true">
-                            <label class="form-check-label" for="{{name}}">{{label}}</label>
-                        </div>
-                    {{/if}}
-                    {{#if type.other}}
-                        <div class="mb-3 error">dont know this one: {{type._specified}}</div>
-                    {{/if}}
-                {{/each}}
-                <button class="btn btn-primary" type="submit">Render STL</button>
+            <form  method="post">
+                {{> groups }}
+                {{> parameterCard }}
+                <button class="btn btn-primary submit" type="submit">Render STL</button>
             </form>
         </div>
     </body>
