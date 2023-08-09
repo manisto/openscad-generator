@@ -3,7 +3,7 @@
     {{#if possibleValues}}
         <select class="form-select" id="{{name}}" name="{{name}}">
             {{#each possibleValues}}
-                <option>{{.}}</option>
+                <option value="{{value}}">{{label}}</option>
             {{/each}}
         </select>
     {{/if}}

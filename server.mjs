@@ -3,6 +3,7 @@ import url from "node:url";
 import path from "node:path";
 import express from "express";
 import bodyParser from "body-parser";
+import * as viewMappers from "./view-mappers.mjs";
 import { generate } from "./generate.mjs";
 import { settings } from "./data/settings.mjs";
 
@@ -12,11 +13,9 @@ hbs.registerPartials(path.join(__dirname, "views", "partials"));
 const app = express();
 const port = 3000;
 
-const validTypes = ["boolean", "number", "string"];
-
 const viewModel = {
-    groups: mapGroupsToView(settings.groups),
-    parameters: mapParametersToView(settings.parameters),
+    groups: viewMappers.mapGroups(settings.groups),
+    parameters: viewMappers.mapParameters(settings.parameters),
 };
 
 app.set('view engine', 'hbs');
@@ -67,29 +66,4 @@ function parseBody(body) {
     });
 
     return parsedParameters;
-}
-
-function mapGroupsToView(groups) {
-    if (!groups) {
-        return null;
-    }
-
-    return groups.map(group => ({
-        ...group,
-        parameters: mapParametersToView(group.parameters),
-    }));
-}
-
-function mapParametersToView(parameters) {
-    if (!parameters) {
-        return null;
-    }
-    
-    return parameters.map(parameter => ({
-        ...parameter, 
-        type: {
-            [validTypes.includes(parameter.type) ? parameter.type : "other"]: true,
-            _specified: parameter.type
-        },
-    }));
 }
