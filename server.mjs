@@ -18,6 +18,11 @@ const viewModel = {
     parameters: viewMappers.mapParameters(settings.parameters),
 };
 
+const allParameters = [
+    ...settings.parameters,
+    ...settings.groups?.flatMap(group => group.parameters) ?? [],
+];
+
 app.set('view engine', 'hbs');
 app.use(bodyParser.urlencoded({ extended: false }));
 
@@ -48,7 +53,7 @@ app.listen(port, () => {
 function parseBody(body) {
     const parsedParameters = {};
 
-    settings.parameters.forEach(parameter => {
+    allParameters.forEach(parameter => {
         switch (parameter.type) {
             case "number":
                 parsedParameters[parameter.name] = Number(body[parameter.name]);
