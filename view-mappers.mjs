@@ -1,14 +1,26 @@
 const validTypes = ["boolean", "number", "string"];
 
+export function mapModels(modelMap, currentModel) {
+    return Array
+        .from(modelMap)
+        .map(([model, settings]) => ({
+            model,
+            label: settings.label,
+            selected: currentModel === model,
+        }));
+}
+
 export function mapGroups(groups) {
     if (!groups) {
         return null;
     }
 
-    return groups.map(group => ({
-        ...group,
-        parameters: mapParameters(group.parameters),
-    }));
+    return groups
+        .filter(group => group.parameters && group.parameters.length !== 0)
+        .map(group => ({
+            ...group,
+            parameters: mapParameters(group.parameters),
+        }));
 }
 
 export function mapParameters(parameters) {

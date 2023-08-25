@@ -1,0 +1,25 @@
+<div class="card shadow">
+    <div class="card-body">
+        <form action="/select-model" method="post" id="modelSelectorForm">
+            <label for="selectedModel" class="form-label">Current model</label>
+            <select class="form-select" name="selectedModel" id="selectedModel">
+                <option disabled="diasbled" hidden="hidden" selected="selected">Please select a model</option>
+                {{#each models}}
+                    {{#if selected}}
+                        <option value="{{model}}" selected="selected">{{label}}</option>
+                    {{/if}}
+                    {{#unless selected}}
+                        <option value="{{model}}">{{label}}</option>
+                    {{/unless}}
+                {{/each}}
+            </select>
+        </form>
+        <script>
+            const modelSelector = document.getElementById("selectedModel");
+            modelSelector.addEventListener("change", () => {
+                const modelSelectorForm = document.getElementById("modelSelectorForm");
+                modelSelectorForm.submit();
+            });
+        </script>
+    </div>
+</div>

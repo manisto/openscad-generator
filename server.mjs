@@ -5,7 +5,9 @@ import express from "express";
 import bodyParser from "body-parser";
 import * as viewMappers from "./view-mappers.mjs";
 import { generate } from "./generate.mjs";
-import { settings } from "./data/settings.mjs";
+import { resolveModelMap } from "./model-loader.mjs";
+
+const modelMap = await resolveModelMap();
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 hbs.registerPartials(path.join(__dirname, "views", "partials"));
@@ -13,21 +15,33 @@ hbs.registerPartials(path.join(__dirname, "views", "partials"));
 const app = express();
 const port = 3000;
 
-const viewModel = {
-    groups: viewMappers.mapGroups(settings.groups),
-    parameters: viewMappers.mapParameters(settings.parameters),
-};
+const viewModelMap = new Map();
+const flattenedParameterMap = new Map();
 
-const allParameters = [
-    ...settings.parameters,
-    ...settings.groups?.flatMap(group => group.parameters) ?? [],
-];
+for (const [model, settings] of modelMap) {
+    viewModelMap.set(model, {
+        singleModelMode: modelMap.size === 1,
+        groups: viewMappers.mapGroups(settings.groups),
+        parameters: viewMappers.mapParameters(settings.parameters),
+    });
+
+    flattenedParameterMap.set(model, [
+        ...settings.parameters,
+        ...settings.groups?.flatMap(group => group.parameters) ?? [],
+    ]);
+};
 
 app.set('view engine', 'hbs');
 app.use(bodyParser.urlencoded({ extended: false }));
 
-app.post("/", (request, response) => {
-    const values = parseBody(request.body);
+app.post("/select-model", (request, response) => {
+    const selectedModel = request.body.selectedModel;
+    response.redirect("/" + selectedModel);
+});
+
+app.post("/:model?", (request, response) => {
+    const selectedModel = (modelMap.size === 1) ? modelMap.keys().next().value : request.params.model;
+    const values = parseBody(selectedModel, request.body);
 
     generate(values)
         .then((file) => {
@@ -40,7 +54,13 @@ app.post("/", (request, response) => {
         });
 });
 
-app.get('/', (request, response) => {
+app.get('/:model?', (request, response) => {
+    const selectedModel = (modelMap.size === 1) ? modelMap.keys().next().value : request.params.model;
+    const viewModel = {
+        ...viewModelMap.get(selectedModel),
+        models: viewMappers.mapModels(modelMap, selectedModel),
+        isModelSelected: !!selectedModel,
+    };
     response.render('index', viewModel);
 });
 
@@ -50,10 +70,11 @@ app.listen(port, () => {
     console.log(`Now listening at port ${port}...`);
 });
 
-function parseBody(body) {
+function parseBody(model, body) {
     const parsedParameters = {};
+    const flattenedParameters = flattenedParameterMap.get(model);
 
-    allParameters.forEach(parameter => {
+    flattenedParameters.forEach(parameter => {
         switch (parameter.type) {
             case "number":
                 parsedParameters[parameter.name] = Number(body[parameter.name]);

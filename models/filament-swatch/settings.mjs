@@ -1,5 +1,6 @@
 export const settings = {
-    "filenameTemplate": "",
+    label: "Filament Swatch",
+    "filenameTemplate": (parameters) => `filament-swatch.stl`,
     "parameters": [
         {
             "type": "string",

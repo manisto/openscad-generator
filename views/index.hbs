@@ -12,10 +12,15 @@
     </head>
     <body>
         <div class="container">
+            {{#unless singleModelMode}}
+                {{> selector }}
+            {{/unless}}
             <form  method="post">
                 {{> groups }}
                 {{> parameterCard }}
-                <button class="btn btn-primary submit" type="submit">Render STL</button>
+                {{#if isModelSelected}}
+                    <button class="btn btn-primary submit" type="submit">Render STL</button>
+                {{/if}}
             </form>
         </div>
     </body>
